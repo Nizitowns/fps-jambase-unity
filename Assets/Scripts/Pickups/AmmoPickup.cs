@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HealthPickup : MonoBehaviour
+public class AmmoPickup : MonoBehaviour
 {
 
     private bool collected;
-
-    public int healAmount;
 
     // Start is called before the first frame update
     void Start()
@@ -25,7 +23,8 @@ public class HealthPickup : MonoBehaviour
     {
         if (other.tag == "Player" && !collected)
         {
-            PlayerHealthController.instance.HealPlayer( healAmount );
+            // Give Ammo
+            PlayerController.instance.activeGun.GetAmmo();
 
             Destroy( gameObject );
 

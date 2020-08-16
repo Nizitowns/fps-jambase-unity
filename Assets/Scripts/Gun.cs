@@ -12,7 +12,7 @@ public class Gun : MonoBehaviour
 
     public float fireRate;
 
-    public int currentAmmo;
+    public int currentAmmo, pickupAmount;
 
     [HideInInspector]
     public float fireCounter;
@@ -30,5 +30,12 @@ public class Gun : MonoBehaviour
         {
             fireCounter -= Time.deltaTime;
         }
+    }
+
+    public void GetAmmo()
+    {
+        currentAmmo += pickupAmount;
+
+        UIController.instance.ammoText.text = "AMMO: " + currentAmmo;
     }
 }
