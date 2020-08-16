@@ -12,6 +12,8 @@ public class Gun : MonoBehaviour
 
     public float fireRate;
 
+    public int currentAmmo;
+
     [HideInInspector]
     public float fireCounter;
 
