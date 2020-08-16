@@ -125,7 +125,8 @@ public class PlayerController : MonoBehaviour
 
 
         // Handle Shooting
-        if (Input.GetButtonDown("Fire1"))
+        // Single Shots
+        if (Input.GetButtonDown("Fire1") && activeGun.fireCounter <= 0)
         {
             RaycastHit hit;
             if (Physics.Raycast(camTrans.position, camTrans.forward, out hit, 50f))
@@ -144,6 +145,7 @@ public class PlayerController : MonoBehaviour
             FireShot();
         }
 
+        // Repeating Shots
         if (Input.GetButton("Fire1") && activeGun.canAutoFire)
         {
             if (activeGun.fireCounter <= 0)
