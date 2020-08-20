@@ -164,6 +164,16 @@ public class PlayerController : MonoBehaviour
             SwitchGun();
         }
 
+        if (Input.GetButtonDown("Fire2"))
+        {
+            CameraController.instance.ZoomIn(activeGun.zoomAmount);
+        }
+
+        if (Input.GetButtonUp( "Fire2" ))
+        {
+            CameraController.instance.ZoomOut();
+        }
+
         // Handle player animations
         anim.SetFloat( "moveSpeed", moveInput.magnitude );
         anim.SetBool( "onGround", canJump );
