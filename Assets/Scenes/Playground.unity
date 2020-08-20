@@ -1412,7 +1412,7 @@ MonoBehaviour:
   - {fileID: 206779491}
   - {fileID: 1580436741}
   - {fileID: 589479722}
-  currentGun: 1
+  currentGun: 0
 --- !u!143 &529211971
 CharacterController:
   m_ObjectHideFlags: 0
