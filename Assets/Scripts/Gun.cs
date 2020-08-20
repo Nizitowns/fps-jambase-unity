@@ -11,11 +11,12 @@ public class Gun : MonoBehaviour
     public bool canAutoFire;
 
     public float fireRate;
+    [HideInInspector]
+    public float fireCounter;
 
     public int currentAmmo, pickupAmount;
 
-    [HideInInspector]
-    public float fireCounter;
+    public Transform firepoint;
 
     // Start is called before the first frame update
     void Start()
