@@ -20,6 +20,8 @@ public class Gun : MonoBehaviour
 
     public float zoomAmount;
 
+    public string gunName;
+
     // Start is called before the first frame update
     void Start()
     {
