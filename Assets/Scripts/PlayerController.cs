@@ -40,7 +40,7 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
-        instance = this;    
+        instance = this;
     }
 
     // Start is called before the first frame update
@@ -55,149 +55,154 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        #region Player Movement
-        //moveInput.x = Input.GetAxis( "Horizontal" ) * moveSpeed * Time.deltaTime;
-        //moveInput.z = Input.GetAxis( "Vertical" ) * moveSpeed * Time.deltaTime;
-
-        // Store y velocity (part of gravity)
-        float yStore = moveInput.y;
-
-        // Player Movement (Input)
-        Vector3 vertMove = transform.forward * Input.GetAxis( "Vertical" );
-        Vector3 horiMove = transform.right * Input.GetAxis( "Horizontal" );
-        moveInput = horiMove + vertMove;
-        moveInput.Normalize();
-
-        // Run or Walk
-        if (Input.GetButton("Fire3"))
+        if (!UIController.instance.pauseScreen.activeInHierarchy)
         {
-            moveInput = moveInput * runSpeed;
-        }
-        else
-        {
-            moveInput = moveInput * moveSpeed;
-        }
-        
 
-        // Gravity Part
-        moveInput.y = yStore;
-        moveInput.y += Physics.gravity.y * gravityModifier * Time.deltaTime;
-        if (charCon.isGrounded)
-        {
-            moveInput.y = Physics.gravity.y * gravityModifier * Time.deltaTime;
-        }
+            #region Player Movement
+            //moveInput.x = Input.GetAxis( "Horizontal" ) * moveSpeed * Time.deltaTime;
+            //moveInput.z = Input.GetAxis( "Vertical" ) * moveSpeed * Time.deltaTime;
 
-        // Handle Jumping & Double Jumping needs fixing as now is working cause of VSync hack 
-        // ToDo Remove VSync and solve the issue properly
-        canJump = Physics.OverlapSphere( groundCheckPoint.position, .25f, whatIsGround ).Length > 0;
+            // Store y velocity (part of gravity)
+            float yStore = moveInput.y;
 
-        if (canJump)
-        {
-            canDoubleJump = false;
-        }
+            // Player Movement (Input)
+            Vector3 vertMove = transform.forward * Input.GetAxis( "Vertical" );
+            Vector3 horiMove = transform.right * Input.GetAxis( "Horizontal" );
+            moveInput = horiMove + vertMove;
+            moveInput.Normalize();
 
-        if (Input.GetButtonDown( "Jump" ) && canJump)
-        {
-            moveInput.y = jumpPower;
-
-            canDoubleJump = true;
-        }
-        else if (canDoubleJump && Input.GetButtonDown( "Jump" ))
-        {
-            moveInput.y = jumpPower;
-
-            canDoubleJump = false;
-        }
-
-
-        charCon.Move( moveInput * Time.deltaTime );
-        #endregion
-
-
-        #region Control The Camera View (Mouse Input Related)
-        Vector2 mouseInput = new Vector2( Input.GetAxisRaw( "Mouse X" ),
-            Input.GetAxisRaw( "Mouse Y" ) ) * mouseSensitivity;
-
-        if (invertX)
-        {
-            mouseInput.x = -mouseInput.x;
-        }
-
-        if (invertY)
-        {
-            mouseInput.y = -mouseInput.y;
-        }
-
-        transform.rotation = Quaternion.Euler( transform.rotation.eulerAngles.x,
-            transform.rotation.eulerAngles.y + mouseInput.x, transform.rotation.eulerAngles.z );
-
-        camTrans.rotation = Quaternion.Euler( camTrans.rotation.eulerAngles +
-            new Vector3( -mouseInput.y, 0f, 0f ) );
-        #endregion
-
-
-        // Handle Shooting
-
-        muzzleFlash.SetActive(false);
-        // Single Shots
-        if (Input.GetButtonDown("Fire1") && activeGun.fireCounter <= 0)
-        {
-            RaycastHit hit;
-            if (Physics.Raycast(camTrans.position, camTrans.forward, out hit, 50f))
+            // Run or Walk
+            if (Input.GetButton( "Fire3" ))
             {
-                if (Vector3.Distance(camTrans.position, hit.point) > 2.0f)
-                {
-                    firePoint.LookAt( hit.point );
-                }
+                moveInput = moveInput * runSpeed;
             }
             else
             {
-                firePoint.LookAt( camTrans.position + (camTrans.forward * 30f) );
+                moveInput = moveInput * moveSpeed;
             }
 
-            //Instantiate( bullet, firePoint.position, firePoint.rotation );
-            FireShot();
-        }
 
-        // Repeating Shots
-        if (Input.GetButton("Fire1") && activeGun.canAutoFire)
-        {
-            if (activeGun.fireCounter <= 0)
+            // Gravity Part
+            moveInput.y = yStore;
+            moveInput.y += Physics.gravity.y * gravityModifier * Time.deltaTime;
+            if (charCon.isGrounded)
             {
+                moveInput.y = Physics.gravity.y * gravityModifier * Time.deltaTime;
+            }
+
+            // Handle Jumping & Double Jumping needs fixing as now is working cause of VSync hack 
+            // ToDo Remove VSync and solve the issue properly
+            canJump = Physics.OverlapSphere( groundCheckPoint.position, .25f, whatIsGround ).Length > 0;
+
+            if (canJump)
+            {
+                canDoubleJump = false;
+            }
+
+            if (Input.GetButtonDown( "Jump" ) && canJump)
+            {
+                moveInput.y = jumpPower;
+
+                canDoubleJump = true;
+            }
+            else if (canDoubleJump && Input.GetButtonDown( "Jump" ))
+            {
+                moveInput.y = jumpPower;
+
+                canDoubleJump = false;
+            }
+
+
+            charCon.Move( moveInput * Time.deltaTime );
+            #endregion
+
+
+            #region Control The Camera View (Mouse Input Related)
+            Vector2 mouseInput = new Vector2( Input.GetAxisRaw( "Mouse X" ),
+                Input.GetAxisRaw( "Mouse Y" ) ) * mouseSensitivity;
+
+            if (invertX)
+            {
+                mouseInput.x = -mouseInput.x;
+            }
+
+            if (invertY)
+            {
+                mouseInput.y = -mouseInput.y;
+            }
+
+            transform.rotation = Quaternion.Euler( transform.rotation.eulerAngles.x,
+                transform.rotation.eulerAngles.y + mouseInput.x, transform.rotation.eulerAngles.z );
+
+            camTrans.rotation = Quaternion.Euler( camTrans.rotation.eulerAngles +
+                new Vector3( -mouseInput.y, 0f, 0f ) );
+            #endregion
+
+
+            // Handle Shooting
+
+            muzzleFlash.SetActive( false );
+            // Single Shots
+            if (Input.GetButtonDown( "Fire1" ) && activeGun.fireCounter <= 0)
+            {
+                RaycastHit hit;
+                if (Physics.Raycast( camTrans.position, camTrans.forward, out hit, 50f ))
+                {
+                    if (Vector3.Distance( camTrans.position, hit.point ) > 2.0f)
+                    {
+                        firePoint.LookAt( hit.point );
+                    }
+                }
+                else
+                {
+                    firePoint.LookAt( camTrans.position + (camTrans.forward * 30f) );
+                }
+
+                //Instantiate( bullet, firePoint.position, firePoint.rotation );
                 FireShot();
             }
-        }
 
-        // Needs update to become generic for inputs (add to input manager)
-        if (Input.GetKeyDown(KeyCode.Tab))
-        {
-            SwitchGun();
-        }
+            // Repeating Shots
+            if (Input.GetButton( "Fire1" ) && activeGun.canAutoFire)
+            {
+                if (activeGun.fireCounter <= 0)
+                {
+                    FireShot();
+                }
+            }
 
-        // Aiming
-        if (Input.GetButtonDown("Fire2"))
-        {
-            CameraController.instance.ZoomIn(activeGun.zoomAmount);
-        }
+            // Needs update to become generic for inputs (add to input manager)
+            if (Input.GetKeyDown( KeyCode.Tab ))
+            {
+                SwitchGun();
+            }
 
-        if (Input.GetButton("Fire2"))
-        {
-            gunHolder.position = Vector3.MoveTowards( gunHolder.position, adsPoint.position, adsSpeed * Time.deltaTime );
-        }
-        else
-        {
-            gunHolder.localPosition = Vector3.MoveTowards( gunHolder.localPosition, gunStartPos, adsSpeed * Time.deltaTime );
-            ;
-        }
+            // Aiming
+            if (Input.GetButtonDown( "Fire2" ))
+            {
+                CameraController.instance.ZoomIn( activeGun.zoomAmount );
+            }
 
-        if (Input.GetButtonUp( "Fire2" ))
-        {
-            CameraController.instance.ZoomOut();
-        }
+            if (Input.GetButton( "Fire2" ))
+            {
+                gunHolder.position = Vector3.MoveTowards( gunHolder.position, adsPoint.position, adsSpeed * Time.deltaTime );
+            }
+            else
+            {
+                gunHolder.localPosition = Vector3.MoveTowards( gunHolder.localPosition, gunStartPos, adsSpeed * Time.deltaTime );
+                ;
+            }
 
-        // Handle player animations
-        anim.SetFloat( "moveSpeed", moveInput.magnitude );
-        anim.SetBool( "onGround", canJump );
+            if (Input.GetButtonUp( "Fire2" ))
+            {
+                CameraController.instance.ZoomOut();
+            }
+
+            // Handle player animations
+            anim.SetFloat( "moveSpeed", moveInput.magnitude );
+            anim.SetBool( "onGround", canJump );
+
+        }
     }
 
     public void FireShot()
@@ -211,7 +216,7 @@ public class PlayerController : MonoBehaviour
 
             UIController.instance.ammoText.text = "AMMO: " + activeGun.currentAmmo;
 
-            muzzleFlash.SetActive(true);
+            muzzleFlash.SetActive( true );
         }
 
     }
